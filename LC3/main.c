@@ -1,5 +1,5 @@
 /*
- * fvm - VM of LC-3 architecture (will probably write another one for MIPS32)
+ * fvm - fasya's virtual machines: Various virtual machines developed by fasya for learnig purpose
 */
 
 #include <stdio.h>
@@ -65,7 +65,7 @@ uint16_t swap16(uint16_t x);
 
 int main(int argc, char **argv) {
     if (argc < 2) {
-        printf("fvm-lc3 [image-file1] ...\n");
+        printf("[INFO]: fvm-lc3 <image-file>\n");
         exit(2);
     }
 
