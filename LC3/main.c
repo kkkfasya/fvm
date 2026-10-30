@@ -1,5 +1,7 @@
 /*
- * fvm - fasya's virtual machines: Various virtual machines developed by fasya for learnig purpose
+ * SPDX-License-Identifier: MIT
+ * Copyright (c) 2026 Kamal Fasya
+ * fvm - fasya's virtual machines: Various virtual machines developed by fasya for learning purpose
 */
 
 #include <stdio.h>
@@ -55,13 +57,16 @@ typedef enum {
 } Cond_Flag;
 
 uint16_t memory[MEMORY_MAX]; // can store total of 128KB
-uint16_t reg[R_COUNT];
+uint16_t reg[R_COUNT]; // GLOBAL MUTABLE STATE!!! functional programmer bros are doomed
 
+// defining the function here
+// i will split it later to separate file if i am in the mood to do so
 int read_image(const char *img);
 uint16_t mem_read(uint16_t mem);
 uint16_t sign_extend(uint16_t x, int bit_count);
 void update_flags(uint16_t r);
 uint16_t swap16(uint16_t x);
+
 
 int main(int argc, char **argv) {
     if (argc < 2) {
@@ -87,7 +92,7 @@ int main(int argc, char **argv) {
         uint16_t op = instr >> 12;
 
         switch (op) {
-            case OP_ADD: 
+            case OP_ADD: { // must wrap within brace  
                 // Destination Register (DR)
                 uint16_t r0 = (instr >> 9) & 0x7;
 
@@ -95,7 +100,7 @@ int main(int argc, char **argv) {
                 uint16_t r1 = (instr >> 6) & 0x7;
 
                 // check wheter in immediate mode
-                // we take one bit from the left-most side, 1 means negative value, 0 means positive value... is that it?
+                // we take one bit from the left-most side, 1 means negative value, 0 means positive value
                 uint16_t imm_flag = (instr >> 5) & 0x1;
 
                 if (imm_flag) {
@@ -109,6 +114,21 @@ int main(int argc, char **argv) {
                 update_flags(r0);
                 
                 break;
+            }
+            case OP_AND: {
+                uint16_t r0 = (instr >> 9) & 0x7;
+                uint16_t r1 = (instr >> 6) & 0x7;
+                uint16_t imm_flag = (instr >> 5) & 0x1;
+                if (imm_flag) {
+                    uint16_t imm5 = sign_extend(instr & 0x1F, 5);
+                    reg[r0] = reg[r1] & imm5;
+                } else {
+                    uint16_t r2 = instr & 0x7;
+                    reg[r0] = reg[r1] & reg[r2];
+                }
+                update_flags(r0);
+                break;
+            }
 
             default:
                 break;
@@ -164,24 +184,4 @@ uint16_t sign_extend(uint16_t x, int bit_count) {
     }
     return x;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
